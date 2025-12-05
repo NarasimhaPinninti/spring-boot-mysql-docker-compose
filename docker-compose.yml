@@ -2,15 +2,14 @@ version: "3"
 
 services:
   application:
-    image: spring-boot-mysql-app
+    image: narasimha1247/narasimha
     container_name: spring-container
     ports:
       - "8080:8080"
     networks:
       - docker-mysql
     depends_on:
-       mysqldb:
-           condition: service_healthy
+        - mysqldb
     deploy:
       restart_policy:
         condition: on-failure
@@ -25,11 +24,6 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=test
-    healthcheck:
-         test: ["cmd","mysqladmin","ping","-h","localhost"]
-         interval: 5s
-         timeout: 5s
-         retries: 5
 networks:
   docker-mysql:
   
