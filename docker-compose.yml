@@ -1,34 +1,26 @@
-services:
-  application:
-    image: narasimha1247/narasimha
-    container_name: spring-container
-    ports:
-      - "8080:8080"
-    networks:
-      - docker-mysql
-    depends_on:
-      mysqldb:
-        condition: service_healthy
-    deploy:
-      restart_policy:
-        condition: on-failure
-        max_attempts: 10
+version: '3.8'
 
-  mysqldb:
-    image: mysql:8.0
+services:
+
+  mysqldb-container:
+    image: mysql:8
     container_name: mysqldb-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
     ports:
       - "3306:3306"
-    networks:
-      - docker-mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=test
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -proot"]
       interval: 5s
       timeout: 5s
       retries: 10
 
-networks:
-  docker-mysql:
+  springapp:
+    image: narasimha1247/narasimha
+    container_name: springapp
+    depends_on:
+      mysqldb-container:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
